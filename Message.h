@@ -13,14 +13,20 @@
 #include <tuple>
 
 
-template <std::size_t NumOfFields, std::size_t ArraySize>
-struct Message {
-    std::tuple<> fields;
 
+struct Message {
+    std::vector<void*> fields;
+
+    template <std::size_t ArraySize>
+    void addField(Field<ArraySize>* field){
+        fields.push_back(static_cast<void*>(field));
+    }
+
+    template <std::size_t ArraySize>
     std::string toString(){
         std::string result;
-        for (int i = 0; i < ArraySize; ++i) {
-            result += fields[i].toString();
+        for (auto field : fields) {
+            result += ((Field<ArraySize>*)field)->toString();
         }
         return result;
     }
