@@ -53,22 +53,21 @@ struct ExampleMessage: Message{
     }
 
     explicit ExampleMessage (std::array<bool, 16> bits) {
-        ExampleMessage msg = ExampleMessage(0, 0, 0, 0);
         for (int i = 0; i < 4; ++i) {
-            msg.id.bits[i] = bits[i];
+            this->id.bits[i] = bits[i];
         }
         for (int i = 0; i < 3; ++i) {
-            msg.length.bits[i] = bits[i + 4];
+            this->length.bits[i] = bits[i + 4];
         }
         for (int i = 0; i < 8; ++i) {
-            msg.data.bits[i] = bits[i + 7];
+            this->data.bits[i] = bits[i + 7];
         }
-        msg.parity.bits[0] = bits[15];
+        this->parity.bits[0] = bits[15];
 
-        this->fields.emplace_back(msg.id);
-        this->fields.emplace_back(msg.length);
-        this->fields.emplace_back(msg.data);
-        this->fields.emplace_back(msg.parity);
+        this->fields.emplace_back(&this->id);
+        this->fields.emplace_back(&this->length);
+        this->fields.emplace_back(&this->data);
+        this->fields.emplace_back(&this->parity);
 
     }
 
