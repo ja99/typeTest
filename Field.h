@@ -6,11 +6,12 @@
 #define TYPETEST_FIELD_H
 
 #include <array>
+#include <vector>
 
-template<std::size_t ArraySize>
-std::array<bool,ArraySize> getBits(int value){
-    std::array<bool,ArraySize> bits{};
-    for (int i = 0; i < ArraySize; ++i) {
+template<std::size_t BitsInValue>
+std::array<bool,BitsInValue> getBits(int value){
+    std::array<bool,BitsInValue> bits{};
+    for (int i = 0; i < BitsInValue; ++i) {
         bits[i] = value & (1 << i);
     }
     return bits;
@@ -24,13 +25,13 @@ struct Field {
     std::array<bool, ArraySize> bits{};
 
     // Check if a bits Array specifies a number that is too large
-    void sizeCheck(std::array<bool, ArraySize>& otherBits) {
-        for (int i = ArraySize - 1; i >= 0; --i) {
+    template<std::size_t BitsInValue>
+    void sizeCheck(std::array<bool, BitsInValue>& otherBits) {
+        for (int i = bits.size(); i < otherBits.size(); i++) {
             if (otherBits[i]) {
-                return;
+                throw std::invalid_argument("Number is too large");
             }
         }
-        throw std::invalid_argument("Number is too large");
     }
 
     std::string toString() {
@@ -41,21 +42,25 @@ struct Field {
         return result;
     }
 
-    explicit Field(int value) {
-        auto newBits = getBits<ArraySize>(value);
-        sizeCheck(newBits);
-        bits = newBits;
+    template<std::size_t BitsInValue>
+    void setBits(std::array<bool, BitsInValue> newBits) {
+        for (int i = 0; i < bits.size(); ++i) {
+            bits[i] = newBits[i];
+        }
+
     }
 
-    explicit Field(const std::array<bool, ArraySize>& newBits) {
+    explicit Field(int value) {
+        auto newBits = getBits<sizeof(value)*8>(value);
         sizeCheck(newBits);
-        bits = newBits;
+        setBits(newBits);
     }
+
 
     explicit Field(int value, const std::string& name, const std::string& description) {
-        auto newBits = getBits<ArraySize>(value);
+        auto newBits = getBits<sizeof(value)*8>(value);
         sizeCheck(newBits);
-        bits = newBits;
+        setBits(newBits);
         this->name = name;
         this->description = description;
     }
