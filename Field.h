@@ -17,6 +17,25 @@ std::array<bool,BitsInValue> getBits(int value){
     return bits;
 }
 
+template <typename T, std::size_t N>
+std::array<bool, N * sizeof(T) * 8> convertToBits(const std::array<T, N>& input) {
+    std::array<bool, N * sizeof(T) * 8> bitArray{};
+    std::size_t bitIndex = 0;
+
+    for (const T& element : input) {
+        // Treat the element as an array of bytes
+        const auto* bytePtr = reinterpret_cast<const unsigned char*>(&element);
+        for (std::size_t byteIndex = 0; byteIndex < sizeof(T); ++byteIndex) {
+            unsigned char byte = bytePtr[byteIndex];
+            for (int bit = 0; bit < 8; ++bit) {
+                bitArray[bitIndex++] = (byte >> bit) & 1;
+            }
+        }
+    }
+
+    return bitArray;
+}
+
 
 template<std::size_t ArraySize>
 struct Field {

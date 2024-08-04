@@ -44,6 +44,20 @@ struct ExampleMessage{
         return bits;
     }
 
+    explicit ExampleMessage (std::array<bool, 16> bits) {
+        ExampleMessage msg = ExampleMessage(0, 0, 0, 0);
+        for (int i = 0; i < 4; ++i) {
+            msg.id.bits[i] = bits[i];
+        }
+        for (int i = 0; i < 3; ++i) {
+            msg.length.bits[i] = bits[i + 4];
+        }
+        for (int i = 0; i < 8; ++i) {
+            msg.data.bits[i] = bits[i + 7];
+        }
+        msg.parity.bits[0] = bits[15];
+    }
+
 
 };
 

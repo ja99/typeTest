@@ -21,10 +21,9 @@ int main() {
     auto msg = ExampleMessage(0, 2, 3, 1);
     std::cout << msg.toString() << std::endl;
     auto bytes = msg.toBits();
-    for (int i = 0; i < bytes.size(); ++i) {
-        std::cout << bytes[i] ? "1" : "0";
+    for (bool byte : bytes) {
+        (std::cout << byte) ? "1" : "0";
     }
-
 
 
     return 0;
