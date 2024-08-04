@@ -21,8 +21,14 @@ int main() {
     auto msg = ExampleMessage(0, 2, 3, 1);
     std::cout << msg.toString() << std::endl;
     auto bytes = msg.toBits();
-    for (bool byte : bytes) {
-        (std::cout << byte) ? "1" : "0";
+
+    // ToDo: use either big or little endian
+    std::cout << "currently inconsistent in regards to little and big endian" << std::endl;
+    for (int i = 0; i < bytes.size(); ++i) {
+        std::cout << bytes[i];
+        if (i % 8 == 7) {
+            std::cout << " ";
+        }
     }
 
 

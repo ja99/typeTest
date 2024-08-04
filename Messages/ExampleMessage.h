@@ -26,32 +26,6 @@ struct ExampleMessage: Message{
         this->fields.emplace_back(&this->parity);
     }
 
-//    std::string toString() {
-//        auto result = std::string();
-//        result += "ID: " + id.toString() + "\n";
-//        result += "Length: " + length.toString() + "\n";
-//        result += "Data: " + data.toString() + "\n";
-//        result += "Parity: " + parity.toString() + "\n";
-//        return result;
-//    }
-
-
-
-    std::array<bool, 16> toBits() {
-        std::array<bool, 16> bits{};
-        for (int i = 0; i < 4; ++i) {
-            bits[i] = id.bits[i];
-        }
-        for (int i = 0; i < 3; ++i) {
-            bits[i + 4] = length.bits[i];
-        }
-        for (int i = 0; i < 8; ++i) {
-            bits[i + 7] = data.bits[i];
-        }
-        bits[15] = parity.bits[0];
-        return bits;
-    }
-
     explicit ExampleMessage (std::array<bool, 16> bits) {
         for (int i = 0; i < 4; ++i) {
             this->id.bits[i] = bits[i];
@@ -68,7 +42,6 @@ struct ExampleMessage: Message{
         this->fields.emplace_back(&this->length);
         this->fields.emplace_back(&this->data);
         this->fields.emplace_back(&this->parity);
-
     }
 
 

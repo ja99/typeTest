@@ -8,10 +8,10 @@
 #include <array>
 #include <vector>
 
-template<std::size_t BitsInValue>
-std::array<bool,BitsInValue> getBits(int value){
-    std::array<bool,BitsInValue> bits{};
-    for (int i = 0; i < BitsInValue; ++i) {
+template<std::size_t N>
+std::array<bool,N> getBits(int value){
+    std::array<bool,N> bits{};
+    for (int i = 0; i < N; ++i) {
         bits[i] = value & (1 << i);
     }
     return bits;
@@ -83,12 +83,6 @@ struct Field {
         this->name = name;
         this->description = description;
     }
-
-    //ToDo: fromBytestream
-    //static Field fromBytestream([ByteStream& stream], int startBit, int endBit);
-
-    //ToDo: insertIntoBytestream
-    //void insertIntoBytestream([ByteStream& stream], int startBit, int endBit);
 };
 
 

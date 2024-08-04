@@ -50,5 +50,37 @@ public:
         return result;
     };
 
+    std::vector<bool> toBits() {
+        std::vector<bool> bits{};
+        for (auto field: fields) {
+            if (field.type() == typeid(Field<1>*)) {
+                auto fieldBits = std::any_cast<Field<1> *>(field)->bits;
+                bits.insert(bits.end(), fieldBits.begin(), fieldBits.end());
+            } else if (field.type() == typeid(Field<2>*)) {
+                auto fieldBits = std::any_cast<Field<2> *>(field)->bits;
+                bits.insert(bits.end(), fieldBits.begin(), fieldBits.end());
+            } else if (field.type() == typeid(Field<3>*)) {
+                auto fieldBits = std::any_cast<Field<3> *>(field)->bits;
+                bits.insert(bits.end(), fieldBits.begin(), fieldBits.end());
+            } else if (field.type() == typeid(Field<4>*)) {
+                auto fieldBits = std::any_cast<Field<4> *>(field)->bits;
+                bits.insert(bits.end(), fieldBits.begin(), fieldBits.end());
+            } else if (field.type() == typeid(Field<5>*)) {
+                auto fieldBits = std::any_cast<Field<5> *>(field)->bits;
+                bits.insert(bits.end(), fieldBits.begin(), fieldBits.end());
+            } else if (field.type() == typeid(Field<6>*)) {
+                auto fieldBits = std::any_cast<Field<6> *>(field)->bits;
+                bits.insert(bits.end(), fieldBits.begin(), fieldBits.end());
+            } else if (field.type() == typeid(Field<7>*)) {
+                auto fieldBits = std::any_cast<Field<7> *>(field)->bits;
+                bits.insert(bits.end(), fieldBits.begin(), fieldBits.end());
+            } else if (field.type() == typeid(Field<8>*)) {
+                auto fieldBits = std::any_cast<Field<8> *>(field)->bits;
+                bits.insert(bits.end(), fieldBits.begin(), fieldBits.end());
+            }
+        }
+        return bits;
+    }
+
 };
 #endif //TYPETEST_MESSAGE_H
