@@ -6,8 +6,9 @@
 #define TYPETEST_EXAMPLEMESSAGE_H
 
 #include "../Field.h"
+#include "../Message.h"
 
-struct ExampleMessage{
+struct ExampleMessage: Message{
     Field<4> id = Field<4>(0, "ID", "The ID of the message");
     Field<3> length = Field<3>(0, "Length", "The length of the message");
     Field<8> data = Field<8>(0, "Data", "The data of the message");
@@ -18,16 +19,23 @@ struct ExampleMessage{
         this->length = Field<3>(length, "Length", "The length of the message");
         this->data = Field<8>(data, "Data", "The data of the message");
         this->parity = Field<1>(parity, "Parity", "The parity of the message");
+
+        this->fields.emplace_back(&this->id);
+        this->fields.emplace_back(&this->length);
+        this->fields.emplace_back(&this->data);
+        this->fields.emplace_back(&this->parity);
     }
 
-    std::string toString() {
-        auto result = std::string();
-        result += "ID: " + id.toString() + "\n";
-        result += "Length: " + length.toString() + "\n";
-        result += "Data: " + data.toString() + "\n";
-        result += "Parity: " + parity.toString() + "\n";
-        return result;
-    }
+//    std::string toString() {
+//        auto result = std::string();
+//        result += "ID: " + id.toString() + "\n";
+//        result += "Length: " + length.toString() + "\n";
+//        result += "Data: " + data.toString() + "\n";
+//        result += "Parity: " + parity.toString() + "\n";
+//        return result;
+//    }
+
+
 
     std::array<bool, 16> toBits() {
         std::array<bool, 16> bits{};
@@ -56,6 +64,12 @@ struct ExampleMessage{
             msg.data.bits[i] = bits[i + 7];
         }
         msg.parity.bits[0] = bits[15];
+
+        this->fields.emplace_back(msg.id);
+        this->fields.emplace_back(msg.length);
+        this->fields.emplace_back(msg.data);
+        this->fields.emplace_back(msg.parity);
+
     }
 
 
