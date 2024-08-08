@@ -4,7 +4,4 @@ project(typeTest)
 set(CMAKE_CXX_STANDARD 23)
 
 add_executable(typeTest main.cpp
-        Field.h
-        Messages/ExampleMessage.h
-        Message.h
 )

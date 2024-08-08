@@ -1,36 +1,51 @@
 #include <iostream>
 #include <array>
-#include "Field.h"
-#include "Messages/ExampleMessage.h"
+#include <vector>
+
+
+
+void getBitsFromBuffer(const char * buffer, size_t startBit, size_t endBit, std::vector<bool> & bits) {
+    if (startBit >= endBit) {
+        throw std::invalid_argument("startBit must be smaller than endBit");
+    }
+    auto nBits = endBit+1 - startBit;
+    if (nBits > bits.size()) {
+        throw std::invalid_argument("nBits must be smaller than the size of the bits vector");
+    }
+
+    for (size_t i = 0; i < nBits; ++i) {
+        size_t bitPosition = startBit + i;
+        size_t byteIndex = bitPosition / 8; // Calculate the byte index in the buffer
+        size_t bitIndex = bitPosition % 8;  // Calculate the bit index in the byte
+
+        // Extract the bit using bitwise operations (big endian)
+        bool bit = (buffer[byteIndex] >> (bitIndex)) & 1;
+
+        // Store the bit in the bits vector
+        bits[endBit - i] = bit;
+    }
+}
 
 
 int main() {
-    std::cout << "Valid Field init:" << std::endl;
-    Field<3> field(7);
-    std::cout << field.toString() << std::endl;
+    auto bits = std::vector<bool>(3);
 
-    std::cout << std::endl << "Invalid Field init:" << std::endl;
-    try {
-        Field<3> field2(8);
+    char * buffer = new char[2];
+    buffer[0] = 0b00010110;
+
+    //print buffer bits
+    for (size_t i = 0; i < sizeof(buffer)*2; ++i) {
+        std::cout << ((buffer[0] & (1 << i)) != 0);
     }
-    catch (std::invalid_argument& e) {
-        std::cout << e.what() << std::endl;
-    }
+    std::cout << std::endl;
 
-    std::cout << std::endl << "Valid ExampleMessage init:" << std::endl;
-    auto msg = ExampleMessage(0, 2, 3, 1);
-    std::cout << msg.toString() << std::endl;
-    auto bytes = msg.toBits();
+    getBitsFromBuffer(buffer, 0, 2, bits);
 
-    // ToDo: use either big or little endian
-    std::cout << "currently inconsistent in regards to little and big endian" << std::endl;
-    for (int i = 0; i < bytes.size(); ++i) {
-        std::cout << bytes[i];
-        if (i % 8 == 7) {
-            std::cout << " ";
-        }
+    for (auto bit : bits) {
+        std::cout << bit;
     }
 
 
+    delete[] buffer;
     return 0;
 }
