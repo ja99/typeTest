@@ -2,6 +2,7 @@
 #include <array>
 #include <vector>
 #include <cstring>
+#include <valarray>
 
 struct SafeBuffer {
     char *buffer;
@@ -103,28 +104,51 @@ void print_bool_vector(const std::vector<bool> &bits, int startBit = 0) {
 
 
 int main() {
-    auto bits = std::vector<bool>(10);
-    int startBit = 5;
-    int endBit = startBit + bits.size();
-
-    auto receivedBuffer = SafeBuffer(2);
-    receivedBuffer.buffer[0] = 0b00000111;
-    receivedBuffer.buffer[1] = 0b00001111;
-
-    std::cout << receivedBuffer.toString() << std::endl;
-
-    auto receivedVec = receivedBuffer.getBits(startBit, endBit);
-
-    print_bool_vector(receivedVec, startBit);
-
-    auto bufferToSend = SafeBuffer(3);
-
-    bufferToSend.setFromSafeBitset(receivedVec, 0, receivedVec.size());
-
-    std::cout << bufferToSend.toString() << std::endl;
+//    auto bits = std::vector<bool>(10);
+//    int startBit = 5;
+//    int endBit = startBit + bits.size();
+//
+//    auto receivedBuffer = SafeBuffer(2);
+//    receivedBuffer.buffer[0] = 0b00000111;
+//    receivedBuffer.buffer[1] = 0b00001111;
+//
+//    std::cout << receivedBuffer.toString() << std::endl;
+//
+//    auto receivedVec = receivedBuffer.getBits(startBit, endBit);
+//
+//    print_bool_vector(receivedVec, startBit);
+//
+//    auto bufferToSend = SafeBuffer(3);
+//
+//    bufferToSend.setFromSafeBitset(receivedVec, 0, receivedVec.size());
+//
+//    std::cout << bufferToSend.toString() << std::endl;
 //
 //
 //    delete[] receivedBuffer;
 //    delete[] bufferToSend;
+
+    size_t nBits = 10;
+    size_t nBytes = nBits / 8 + (nBits % 8 != 0);
+
+    std::cout << "nBits: " << nBits << std::endl;
+    std::cout << "nBytes: " << nBytes << std::endl;
+
+    char * buffer = new char[nBytes];
+    buffer[0] = 0b00000111;
+    buffer[1] = 0b00001111;
+    buffer[2] = 0b00000100;
+
+    uint16_t val = 0;
+    memccpy(&val, &buffer[1], 2, 2);
+
+    std::cout << "val: " << val << std::endl;
+
+    uint16_t masked = val & uint16_t(pow(2, nBits) - 1);
+
+    std::cout << "masked: " << masked << std::endl;
+
+
+
     return 0;
 }
