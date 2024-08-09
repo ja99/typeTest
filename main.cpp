@@ -3,13 +3,12 @@
 #include <vector>
 #include <cstring>
 
-
-void getBitsFromBuffer(
-        const char * buffer,
+void safetyChecks(
+        const char *buffer,
         size_t startBit, //inclusive
-        size_t endBit, //exclusive
-        std::vector<bool> & bits)
-        {
+        size_t endBit, //exclusive,
+        std::vector<bool> &bits
+) {
     if (startBit >= endBit) {
         throw std::invalid_argument("startBit must be smaller than endBit");
     }
@@ -17,9 +16,21 @@ void getBitsFromBuffer(
     if (nBits > bits.size()) {
         throw std::invalid_argument("nBits must be smaller than the size of the bits vector");
     }
-    if (endBit > 8 * sizeof(char) * strlen(buffer)) {
+    int lenBuffer= strlen(buffer)*sizeof(char)*8;
+    if (endBit >lenBuffer) {
         throw std::invalid_argument("endBit must be smaller than the size of the buffer");
     }
+}
+
+void getBitsFromBuffer(
+        const char *buffer,
+        size_t startBit, //inclusive
+        size_t endBit, //exclusive
+        std::vector<bool> &bits) {
+
+    safetyChecks(buffer, startBit, endBit, bits);
+
+    auto nBits = endBit - startBit;
 
     for (size_t i = 0; i < nBits; ++i) {
         size_t bitPosition = startBit + i;
@@ -39,18 +50,61 @@ void getBitsFromBuffer(
     }
 }
 
+void insertBitsIntoBuffer(
+        char *buffer,
+        size_t startBit, //inclusive
+        size_t endBit, //exclusive
+        std::vector<bool> &bits) {
+
+    safetyChecks(buffer, startBit, endBit, bits);
+
+    auto nBits = endBit - startBit;
+
+    for(size_t i = 0; i < nBits; ++i) {
+        size_t bitPosition = startBit + i;
+        size_t byteIndex = bitPosition / 8; // Calculate the byte index in the buffer
+        size_t bitIndex = bitPosition % 8;  // Calculate the bit index in the byte
+
+        char byte = buffer[byteIndex];
+
+        // Clear the bit at the bitIndex position
+        byte &= ~(1 << (7 - bitIndex));
+
+        // Set the bit at the bitIndex position
+        byte |= (bits[i] << (7 - bitIndex));
+
+        // Store the byte back in the buffer
+        buffer[byteIndex] = byte;
+    }
+
+}
+
+
 void print_bits(char c) {
     for (int i = 7; i >= 0; i--) {
         printf("%d", (c >> i) & 1);
     }
 }
 
-void print_char_buffer_bits(const char *buffer, size_t size) {
-    for (size_t i = 0; i < size; i++) {
+void print_char_buffer_bits(const char *buffer) {
+    for (size_t i = 0; i < strlen(buffer); i++) {
         print_bits(buffer[i]);
         printf(" "); // Add a space between characters for clarity
     }
     printf("\n");
+}
+
+void print_bool_vector(const std::vector<bool> &bits, int startBit=0) {
+    for (int i = 0; i < startBit; i++) {
+        std::cout << " ";
+    }
+    for (int i = 0; i < bits.size(); i++) {
+        std::cout << bits[i];
+        if (i % 8 == 7) {
+            std::cout << " ";
+        }
+    }
+    std::cout << std::endl;
 }
 
 
@@ -59,26 +113,31 @@ int main() {
     int startBit = 5;
     int endBit = startBit + bits.size();
 
-    char * buffer = new char[2];
-    buffer[0] = 0b00000111;
-    buffer[1] = 0b00001111;
+    char *receivedBuffer = new char[2];
+    receivedBuffer[0] = 0b00000111;
+    receivedBuffer[1] = 0b00001111;
 
-    print_char_buffer_bits(buffer, 2);
+    print_char_buffer_bits(receivedBuffer);
 
-    getBitsFromBuffer(buffer, startBit, endBit, bits);
+    getBitsFromBuffer(receivedBuffer, startBit, endBit, bits);
 
-    for (int i =0; i<startBit; i++) {
-        std::cout << " ";
-    }
-    for (int i = 0; i<bits.size(); i++) {
-        std::cout << bits[i];
-        if (i % 8 == 7) {
-            std::cout << " ";
-        }
-    }
-    std::cout << std::endl;
+    print_bool_vector(bits, startBit);
 
 
-    delete[] buffer;
+    char *bufferToSend = new char[3];
+    bufferToSend[0] = 'A';            // Set first character to a non-zero value
+    bufferToSend[1] = 'A';     // Still setting to zero
+    bufferToSend[2] = 'A';     // Still setting to zero
+    bufferToSend[3] = '\0';           // Explicitly add null terminator
+
+    std::cout << strlen(bufferToSend) << std::endl;
+
+    insertBitsIntoBuffer(bufferToSend, 0, bits.size(), bits);
+
+    print_char_buffer_bits(bufferToSend);
+
+
+    delete[] receivedBuffer;
+    delete[] bufferToSend;
     return 0;
 }
